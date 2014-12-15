@@ -245,7 +245,11 @@
 			<artifactId>geoxygene-util</artifactId>
 			<version>${geoxygene.noyau.version}</version>
 		</dependency>
-
+		<dependency>
+			<groupId>fr.ign.cogit</groupId>
+			<artifactId>geoxygene-ontology</artifactId>
+			<version>${geoxygene.noyau.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>

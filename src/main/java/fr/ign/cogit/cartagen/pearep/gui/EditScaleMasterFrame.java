@@ -97,10 +97,10 @@ import fr.ign.cogit.cartagen.software.interfacecartagen.utilities.swingcomponent
 import fr.ign.cogit.cartagen.software.interfacecartagen.utilities.swingcomponents.filter.XMLFileFilter;
 import fr.ign.cogit.cartagen.util.FileUtil;
 import fr.ign.cogit.cartagen.util.Interval;
-import fr.ign.cogit.cartagen.util.ontologies.OntologyUtil;
 import fr.ign.cogit.geoxygene.filter.BinaryComparisonOpsType;
 import fr.ign.cogit.geoxygene.filter.BinaryLogicOpsType;
 import fr.ign.cogit.geoxygene.util.XMLUtil;
+import fr.ign.cogit.ontology.owl.OwlUtil;
 
 public class EditScaleMasterFrame extends JFrame implements ActionListener,
     ChangeListener, PropertyChangeListener, ItemListener, MouseListener {
@@ -145,8 +145,7 @@ public class EditScaleMasterFrame extends JFrame implements ActionListener,
         .getResource("resources/images/icons/logo.jpg").getPath()
         .replaceAll("%20", " ")).getImage());
     this.setSize(1200, 700);
-    this.setOntology(OntologyUtil
-        .getOntologyFromName("MapGeneralisationProcesses"));
+    this.setOntology(OwlUtil.getOntologyFromName("MapGeneralisationProcesses"));
     this.setGeoClasses();
     this.current = new ScaleMaster();
     this.initThemes();
