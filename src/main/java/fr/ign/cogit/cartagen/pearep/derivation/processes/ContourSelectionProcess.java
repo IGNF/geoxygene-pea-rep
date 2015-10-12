@@ -96,7 +96,7 @@ public class ContourSelectionProcess extends ScaleMasterGeneProcess {
     // now select the contour lines with altitude proportionnal to selectStep
     for (IContourLine contourLine : contourFeatures) {
       if ((contourLine.getAltitude() % selectStep) != 0) {
-        contourLine.eliminateBatch();
+        contourLine.eliminate();
       }
     }
   }
@@ -124,7 +124,7 @@ public class ContourSelectionProcess extends ScaleMasterGeneProcess {
       if (!(index == csThreshold)) {
         for (IContourLine contourLine : contourFeatures) {
           if (contourLine.getAltitude() == altitude.doubleValue()) {
-            contourLine.eliminateBatch();
+            contourLine.eliminate();
           }
         }
       } else {

@@ -334,4 +334,10 @@ public class VMAPWaterArea extends VMAPFeature implements IWaterArea {
   public double getWidth() {
     return width;
   }
+
+  @Override
+  public WaterAreaNature getNature() {
+    // unused
+    return null;
+  }
 }

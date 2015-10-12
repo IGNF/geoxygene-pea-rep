@@ -374,4 +374,10 @@ public class MGCPReservoirArea extends MGCPFeature implements IWaterArea {
     this.rtp = rtp;
   }
 
+  @Override
+  public WaterAreaNature getNature() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

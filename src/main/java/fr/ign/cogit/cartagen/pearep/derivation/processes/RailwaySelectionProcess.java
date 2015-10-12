@@ -19,7 +19,7 @@ import fr.ign.cogit.cartagen.core.genericschema.railway.IRailwayLine;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.cartagen.spatialanalysis.network.NetworkEnrichment;
 import fr.ign.cogit.cartagen.spatialanalysis.network.Stroke;
 import fr.ign.cogit.cartagen.spatialanalysis.network.StrokesNetwork;
@@ -58,9 +58,11 @@ public class RailwaySelectionProcess extends ScaleMasterGeneProcess {
     this.parameterise();
 
     // make planar and enrich the road network
-    NetworkEnrichment.enrichNetwork(CartAGenDocOld.getInstance()
-        .getCurrentDataset(), CartAGenDocOld.getInstance().getCurrentDataset()
-        .getRailwayNetwork(), false);
+    NetworkEnrichment.enrichNetwork(CartAGenDoc.getInstance()
+        .getCurrentDataset(), CartAGenDoc.getInstance().getCurrentDataset()
+        .getRailwayNetwork(), false, CartAGenDoc.getInstance()
+        .getCurrentDataset().getCartAGenDB().getGeneObjImpl()
+        .getCreationFactory());
 
     PropertyIsNotEqualTo filter = new PropertyIsNotEqualTo();
     filter.setLiteral(new Literal("0"));
@@ -71,11 +73,11 @@ public class RailwaySelectionProcess extends ScaleMasterGeneProcess {
     // first get the road features not yet selected
     for (IGeneObj obj : features) {
       if (((INetworkSection) obj).getInitialNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (((INetworkSection) obj).getFinalNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (filter.evaluate(obj)) {
@@ -96,7 +98,7 @@ public class RailwaySelectionProcess extends ScaleMasterGeneProcess {
         for (ArcReseau arc : stroke.getFeatures()) {
           IRailwayLine rail = map.get(arc);
           if (rail != null) {
-            rail.eliminateBatch();
+            rail.eliminate();
           }
         }
       }

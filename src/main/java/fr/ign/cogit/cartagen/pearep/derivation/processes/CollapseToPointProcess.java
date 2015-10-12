@@ -19,9 +19,8 @@ import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterTheme;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.CartagenApplication;
 import fr.ign.cogit.cartagen.software.dataset.CartAGenDB;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.api.feature.IPopulation;
 import fr.ign.cogit.geoxygene.api.spatial.geomprim.IPoint;
@@ -72,31 +71,33 @@ public class CollapseToPointProcess extends ScaleMasterGeneProcess {
       e1.printStackTrace();
     }
     @SuppressWarnings("unchecked")
-    IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDocOld
+    IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDoc
         .getInstance()
         .getCurrentDataset()
         .getCartagenPop(
-            CartAGenDocOld.getInstance().getCurrentDataset()
+            CartAGenDoc.getInstance().getCurrentDataset()
                 .getPopNameFromClass(classObj), ft);
 
     for (IGeneObj obj : features) {
       if (obj.isDeleted())
         continue;
-      obj.eliminateBatch();
+      obj.eliminate();
       IGeometry geom = obj.getGeom();
       if (areaThreshold > -1 && geom.area() > areaThreshold)
         continue;
       IPoint centroid = geom.centroid().toGM_Point();
 
-      for (Method meth : CartagenApplication.getInstance().getCreationFactory()
-          .getClass().getMethods()) {
+      for (Method meth : CartAGenDoc.getInstance().getCurrentDataset()
+          .getCartAGenDB().getGeneObjImpl().getCreationFactory().getClass()
+          .getMethods()) {
         if (classObj.equals(meth.getReturnType())) {
           if (meth.getParameterTypes().length == 1
               & (meth.getParameterTypes()[0].equals(IPoint.class) || meth
                   .getParameterTypes()[0].equals(IGeometry.class))) {
             try {
-              IGeneObj newObj = (IGeneObj) meth.invoke(CartagenApplication
-                  .getInstance().getCreationFactory(), centroid);
+              IGeneObj newObj = (IGeneObj) meth.invoke(CartAGenDoc
+                  .getInstance().getCurrentDataset().getCartAGenDB()
+                  .getGeneObjImpl().getCreationFactory(), centroid);
               // add object to its dataset population
               pop.add(newObj);
 
@@ -126,7 +127,7 @@ public class CollapseToPointProcess extends ScaleMasterGeneProcess {
       areaThreshold = (Double) getParamValueFromName("area_min");
     String themeName = (String) getParamValueFromName("theme");
     ScaleMasterTheme theme = this.getScaleMaster().getThemeFromName(themeName);
-    CartAGenDB db = CartAGenDocOld.getInstance().getCurrentDataset()
+    CartAGenDB db = CartAGenDoc.getInstance().getCurrentDataset()
         .getCartAGenDB();
     Set<Class<?>> classes = new HashSet<Class<?>>();
     classes.addAll(theme.getRelatedClasses());

@@ -319,4 +319,10 @@ public class VMAP1PPLakeresA extends VMAP1PPFeature implements IWaterArea {
     this.area = area;
   }
 
+  @Override
+  public WaterAreaNature getNature() {
+    // unused
+    return null;
+  }
+
 }

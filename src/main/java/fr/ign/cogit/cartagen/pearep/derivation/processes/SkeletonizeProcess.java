@@ -11,7 +11,7 @@ import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterTheme;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
 import fr.ign.cogit.cartagen.software.dataset.CartAGenDB;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.api.feature.IPopulation;
 import fr.ign.cogit.geoxygene.api.spatial.coordgeom.ILineString;
@@ -42,7 +42,7 @@ public class SkeletonizeProcess extends ScaleMasterGeneProcess {
   public void parameterise() {
     String themeName = (String) this.getParamValueFromName("linear_theme");
     ScaleMasterTheme theme = this.getScaleMaster().getThemeFromName(themeName);
-    CartAGenDB db = CartAGenDocOld.getInstance().getCurrentDataset()
+    CartAGenDB db = CartAGenDoc.getInstance().getCurrentDataset()
         .getCartAGenDB();
     Set<Class<?>> classes = new HashSet<Class<?>>();
     classes.addAll(theme.getRelatedClasses());
@@ -56,11 +56,11 @@ public class SkeletonizeProcess extends ScaleMasterGeneProcess {
   @Override
   public void execute(IFeatureCollection<? extends IGeneObj> features,
       CartAGenDataSet currentDataset) throws Exception {
-    IPopulation<IGeneObj> pop = CartAGenDocOld
+    IPopulation<IGeneObj> pop = CartAGenDoc
         .getInstance()
         .getCurrentDataset()
         .getCartagenPop(
-            CartAGenDocOld.getInstance().getCurrentDataset()
+            CartAGenDoc.getInstance().getCurrentDataset()
                 .getPopNameFromClass(this.newClass));
     for (IGeneObj obj : features) {
       if (obj.isDeleted()) {
@@ -96,7 +96,7 @@ public class SkeletonizeProcess extends ScaleMasterGeneProcess {
       if (width > this.widthMin) {
         continue;
       }
-      obj.eliminateBatch();
+      obj.eliminate();
       for (ILineString newGeom : skeleton) {
         Constructor<?> constr = this.newClass.getConstructor(IGeometry.class);
         IGeneObj newObj = (IGeneObj) constr.newInstance(newGeom);

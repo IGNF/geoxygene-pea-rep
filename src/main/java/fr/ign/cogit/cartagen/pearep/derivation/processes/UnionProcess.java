@@ -24,7 +24,7 @@ import fr.ign.cogit.cartagen.core.genericschema.IGeneObj;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.api.feature.IPopulation;
 import fr.ign.cogit.geoxygene.api.spatial.coordgeom.IPolygon;
@@ -90,11 +90,11 @@ public class UnionProcess extends ScaleMasterGeneProcess {
       IGeometry union = JtsGeOxygene.makeGeOxygeneGeom(jtsUnion);
 
       // Get the object population
-      IPopulation<IGeneObj> pop = CartAGenDocOld
+      IPopulation<IGeneObj> pop = CartAGenDoc
           .getInstance()
           .getCurrentDataset()
           .getCartagenPop(
-              CartAGenDocOld.getInstance().getCurrentDataset()
+              CartAGenDoc.getInstance().getCurrentDataset()
                   .getPopNameFromClass(features.get(0).getClass()));
 
       // Get the constructor of the class, in order to create new objects
@@ -103,7 +103,7 @@ public class UnionProcess extends ScaleMasterGeneProcess {
 
       // Eliminate original objects
       for (IGeneObj ft : features) {
-        ft.eliminateBatch();
+        ft.eliminate();
       }
 
       // Split MultiPolygons and fill Polygons in the population

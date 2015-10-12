@@ -19,8 +19,7 @@ import fr.ign.cogit.cartagen.core.genericschema.IGeneObj;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.CartagenApplication;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.cartagen.spatialanalysis.clustering.KMeansCluster;
 import fr.ign.cogit.cartagen.spatialanalysis.clustering.KMeansClutering;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
@@ -75,30 +74,32 @@ public class KMeansClusteringProcess extends ScaleMasterGeneProcess {
       IGeneObj newCenter = cluster.getCenterNearest();
       for (IGeneObj obj : cluster.getFeatures()) {
         if (centroid || !obj.equals(newCenter))
-          obj.eliminateBatch();
+          obj.eliminate();
       }
 
       if (centroid) {
         Class<?> classObj = cluster.getFeaturesClass();
-        for (Method meth : CartagenApplication.getInstance()
-            .getCreationFactory().getClass().getMethods()) {
+        for (Method meth : CartAGenDoc.getInstance().getCurrentDataset()
+            .getCartAGenDB().getGeneObjImpl().getCreationFactory().getClass()
+            .getMethods()) {
           if (classObj.equals(meth.getReturnType())) {
             if (meth.getParameterTypes().length == 1
                 & (meth.getParameterTypes()[0].equals(IPolygon.class) || meth
                     .getParameterTypes()[0].equals(IGeometry.class))) {
               try {
-                IGeneObj newObj = (IGeneObj) meth.invoke(CartagenApplication
-                    .getInstance().getCreationFactory(), cluster.getCenter()
+                IGeneObj newObj = (IGeneObj) meth.invoke(CartAGenDoc
+                    .getInstance().getCurrentDataset().getCartAGenDB()
+                    .getGeneObjImpl().getCreationFactory(), cluster.getCenter()
                     .toGM_Point());
                 // add object to its dataset population
                 String ft = (String) classObj.getField("FEAT_TYPE_NAME").get(
                     null);
                 @SuppressWarnings("unchecked")
-                IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDocOld
+                IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDoc
                     .getInstance()
                     .getCurrentDataset()
                     .getCartagenPop(
-                        CartAGenDocOld.getInstance().getCurrentDataset()
+                        CartAGenDoc.getInstance().getCurrentDataset()
                             .getPopNameFromClass(classObj), ft);
                 pop.add(newObj);
 

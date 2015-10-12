@@ -38,10 +38,6 @@ public class MGCPLakeArea extends MGCPFeature implements IWaterArea {
   private SurfaceDEau geoxObj;
   private String name;
 
-  public enum WaterAreaType {
-    LAKE, RIVER
-  }
-
   // VMAP attributes
   // MGCP attributes
   private long acc, ace_eval, ale_eval, ari, fcsubtype, hyp, prc, scc, smc,
@@ -51,7 +47,7 @@ public class MGCPLakeArea extends MGCPFeature implements IWaterArea {
       src_info, tier_note, txt, uid, upd_date, upd_info, valid_date,
       valid_info;
   private double length, width;
-  private WaterAreaType type = WaterAreaType.RIVER;
+  private WaterAreaNature type = WaterAreaNature.RIVER;
 
   /**
    * Cosntructor from lakeresa class from VMAP2i model
@@ -76,7 +72,7 @@ public class MGCPLakeArea extends MGCPFeature implements IWaterArea {
     this.prc = getLongAttribute("prc");
     if (attributes.containsKey("scc")) {
       this.scc = getLongAttribute("scc");
-      this.setType(WaterAreaType.LAKE);
+      this.setType(WaterAreaNature.LAKE);
     }
     this.smc = getLongAttribute("smc");
     this.src_name = getLongAttribute("src_name");
@@ -253,11 +249,11 @@ public class MGCPLakeArea extends MGCPFeature implements IWaterArea {
     this.hyp = hyp;
   }
 
-  public WaterAreaType getType() {
+  public WaterAreaNature getType() {
     return type;
   }
 
-  public void setType(WaterAreaType type) {
+  public void setType(WaterAreaNature type) {
     this.type = type;
   }
 
@@ -467,5 +463,10 @@ public class MGCPLakeArea extends MGCPFeature implements IWaterArea {
 
   public void setValid_info(String valid_info) {
     this.valid_info = valid_info;
+  }
+
+  @Override
+  public WaterAreaNature getNature() {
+    return type;
   }
 }

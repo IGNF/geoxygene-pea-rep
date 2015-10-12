@@ -53,7 +53,7 @@ public class RunwaySimplificationProcess extends ScaleMasterGeneProcess {
         if (treatedAirports.contains(airport))
           continue;
         if (linkToAirport && airport.isEliminated()) {
-          obj.eliminateBatch();
+          obj.eliminate();
           continue;
         }
         treatedAirports.add(airport);

@@ -23,8 +23,7 @@ import fr.ign.cogit.cartagen.core.genericschema.road.IRoadLine;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.CartagenApplication;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.api.spatial.coordgeom.IDirectPosition;
 import fr.ign.cogit.geoxygene.api.spatial.geomroot.IGeometry;
@@ -61,11 +60,11 @@ public class BridgeCollapseProcess extends ScaleMasterGeneProcess {
       // first the case where the containing network is deleted
       if (bridge.getContainingNetwork() != null
           && bridge.getContainingNetwork().isEliminated())
-        bridge.eliminateBatch();
+        bridge.eliminate();
 
       // then when the containing network has not been imported
       if (bridge.getContainingNetwork() == null)
-        bridge.eliminateBatch();
+        bridge.eliminate();
 
       // get the intersecting river area
       boolean collapse = false;
@@ -77,11 +76,11 @@ public class BridgeCollapseProcess extends ScaleMasterGeneProcess {
         continue;
 
       // now, collapse the bridge to a point
-      obj.eliminateBatch();
+      obj.eliminate();
       IGeometry geom = obj.getGeom();
       INetworkSection crossedNetwork = bridge.getCrossedNetwork();
       if (crossedNetwork == null) {
-        Collection<IWaterLine> rivers = CartAGenDocOld.getInstance()
+        Collection<IWaterLine> rivers = CartAGenDoc.getInstance()
             .getCurrentDataset().getWaterLines().select(geom);
         if (rivers == null)
           continue;
@@ -93,7 +92,7 @@ public class BridgeCollapseProcess extends ScaleMasterGeneProcess {
       if (geom.intersects(crossedNetwork.getGeom()))
         centroid = geom.intersection(crossedNetwork.getGeom()).coord().get(0);
       else {
-        for (IRoadLine road : CartAGenDocOld.getInstance().getCurrentDataset()
+        for (IRoadLine road : CartAGenDoc.getInstance().getCurrentDataset()
             .getRoads().select(geom)) {
           if (road.getGeom().intersectsStrictement(crossedNetwork.getGeom())) {
             centroid = road.getGeom().intersection(crossedNetwork.getGeom())
@@ -102,7 +101,7 @@ public class BridgeCollapseProcess extends ScaleMasterGeneProcess {
           }
         }
         if (centroid == null) {
-          for (IRailwayLine rail : CartAGenDocOld.getInstance()
+          for (IRailwayLine rail : CartAGenDoc.getInstance()
               .getCurrentDataset().getRailwayLines().select(geom)) {
             if (rail.getGeom().intersectsStrictement(crossedNetwork.getGeom())) {
               centroid = rail.getGeom().intersection(crossedNetwork.getGeom())
@@ -114,9 +113,10 @@ public class BridgeCollapseProcess extends ScaleMasterGeneProcess {
       }
       if (centroid == null)
         continue;
-      IBridgePoint bridgePt = CartagenApplication.getInstance()
-          .getCreationFactory().createBridgePoint(centroid.toGM_Point());
-      CartAGenDocOld.getInstance().getCurrentDataset().getBridgePoints()
+      IBridgePoint bridgePt = CartAGenDoc.getInstance().getCurrentDataset()
+          .getCartAGenDB().getGeneObjImpl().getCreationFactory()
+          .createBridgePoint(centroid.toGM_Point());
+      CartAGenDoc.getInstance().getCurrentDataset().getBridgePoints()
           .add(bridgePt);
       bridgePt.setCrossedNetwork(crossedNetwork);
     }

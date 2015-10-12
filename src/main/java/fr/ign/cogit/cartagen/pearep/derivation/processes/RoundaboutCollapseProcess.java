@@ -21,9 +21,9 @@ import fr.ign.cogit.cartagen.genealgorithms.section.CollapseRoundabout;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
-import fr.ign.cogit.cartagen.spatialanalysis.network.CrossRoadDetection;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.cartagen.spatialanalysis.network.NetworkEnrichment;
+import fr.ign.cogit.cartagen.spatialanalysis.network.roads.CrossRoadDetection;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.schemageo.api.support.reseau.ArcReseau;
 
@@ -56,21 +56,23 @@ public class RoundaboutCollapseProcess extends ScaleMasterGeneProcess {
     this.parameterise();
 
     // enrich the road network
-    NetworkEnrichment.enrichNetwork(CartAGenDocOld.getInstance()
-        .getCurrentDataset(), CartAGenDocOld.getInstance().getCurrentDataset()
-        .getRoadNetwork(), deleted);
+    NetworkEnrichment.enrichNetwork(CartAGenDoc.getInstance()
+        .getCurrentDataset(), CartAGenDoc.getInstance().getCurrentDataset()
+        .getRoadNetwork(), deleted, CartAGenDoc.getInstance()
+        .getCurrentDataset().getCartAGenDB().getGeneObjImpl()
+        .getCreationFactory());
 
     // get the eliminated features to compute strokes on
     HashMap<ArcReseau, IRoadLine> map = new HashMap<ArcReseau, IRoadLine>();
     // first get the road features not yet selected
-    for (IGeneObj obj : CartAGenDocOld.getInstance().getCurrentDataset()
+    for (IGeneObj obj : CartAGenDoc.getInstance().getCurrentDataset()
         .getRoadNetwork().getSections()) {
       if (((INetworkSection) obj).getInitialNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (((INetworkSection) obj).getFinalNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (deleted) {
@@ -84,11 +86,11 @@ public class RoundaboutCollapseProcess extends ScaleMasterGeneProcess {
     }
 
     CrossRoadDetection algo = new CrossRoadDetection();
-    algo.detectRoundaboutsAndBranchingCartagen(CartAGenDocOld.getInstance()
+    algo.detectRoundaboutsAndBranchingCartagen(CartAGenDoc.getInstance()
         .getCurrentDataset());
 
-    for (IRoundAbout roundabout : CartAGenDocOld.getInstance()
-        .getCurrentDataset().getRoundabouts()) {
+    for (IRoundAbout roundabout : CartAGenDoc.getInstance().getCurrentDataset()
+        .getRoundabouts()) {
       CollapseRoundabout collapse = new CollapseRoundabout(diameter, roundabout);
       collapse.collapseToPoint();
     }

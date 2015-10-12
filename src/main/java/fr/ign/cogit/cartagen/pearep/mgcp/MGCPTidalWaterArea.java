@@ -331,4 +331,10 @@ public class MGCPTidalWaterArea extends MGCPFeature implements IWaterArea {
     this.prc = prc;
   }
 
+  @Override
+  public WaterAreaNature getNature() {
+    // unused
+    return null;
+  }
+
 }

@@ -17,6 +17,7 @@ import fr.ign.cogit.cartagen.core.genericschema.urban.ISportsField;
 import fr.ign.cogit.cartagen.core.genericschema.urban.IUrbanBlock;
 import fr.ign.cogit.cartagen.pearep.vmap.PeaRepDbType;
 import fr.ign.cogit.geoxygene.api.feature.IFeature;
+import fr.ign.cogit.geoxygene.api.spatial.coordgeom.ILineString;
 import fr.ign.cogit.geoxygene.api.spatial.coordgeom.IPolygon;
 import fr.ign.cogit.geoxygene.schemageo.api.bati.AutreConstruction;
 import fr.ign.cogit.geoxygene.schemageo.impl.bati.AutreConstructionImpl;
@@ -24,6 +25,7 @@ import fr.ign.cogit.geoxygene.schemageo.impl.bati.AutreConstructionImpl;
 public class MGCPStadium extends MGCPFeature implements ISportsField {
 
   private AutreConstruction geoxObj;
+  private SportsFieldType type = SportsFieldType.UNKNOWN;
 
   // VMAP attributes
   private String ace, ale, cpyrt_note, hgt, nam, nfi, nfn, src_date, src_info,
@@ -289,6 +291,21 @@ public class MGCPStadium extends MGCPFeature implements ISportsField {
 
   public void setSsr(long ssr) {
     this.ssr = ssr;
+  }
+
+  @Override
+  public SportsFieldType getType() {
+    return type;
+  }
+
+  @Override
+  public String getTypeSymbol() {
+    return type.name();
+  }
+
+  @Override
+  public ILineString getMedianGeom() {
+    return null;
   }
 
 }

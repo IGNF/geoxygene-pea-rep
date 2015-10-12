@@ -17,7 +17,7 @@ import fr.ign.cogit.cartagen.genealgorithms.energy.ElectricityLineTypification;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 
 /**
@@ -48,8 +48,8 @@ public class ElectricTypificationProcess extends ScaleMasterGeneProcess {
     parameterise();
     // perform typification
     ElectricityLineTypification algo = new ElectricityLineTypification(
-        CartAGenDocOld.getInstance().getCurrentDataset()
-            .getElectricityNetwork(), parallelDist);
+        CartAGenDoc.getInstance().getCurrentDataset().getElectricityNetwork(),
+        parallelDist);
     for (ElectricityLineTypification.ParallelSectionsCluster cluster : algo
         .findClusters()) {
       cluster.collapse();
@@ -59,7 +59,7 @@ public class ElectricTypificationProcess extends ScaleMasterGeneProcess {
       if (obj.isEliminated())
         continue;
       if (obj.getGeom().length() < minLength)
-        obj.eliminateBatch();
+        obj.eliminate();
     }
   }
 

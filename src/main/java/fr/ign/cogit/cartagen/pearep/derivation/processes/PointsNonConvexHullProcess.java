@@ -20,9 +20,8 @@ import fr.ign.cogit.cartagen.mrdb.scalemaster.ProcessParameter;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterGeneProcess;
 import fr.ign.cogit.cartagen.mrdb.scalemaster.ScaleMasterTheme;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.CartagenApplication;
 import fr.ign.cogit.cartagen.software.dataset.CartAGenDB;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.cartagen.spatialanalysis.clustering.DistanceClustering;
 import fr.ign.cogit.geoxygene.api.feature.IFeatureCollection;
 import fr.ign.cogit.geoxygene.api.feature.IPopulation;
@@ -83,11 +82,11 @@ public class PointsNonConvexHullProcess extends ScaleMasterGeneProcess {
       e1.printStackTrace();
     }
     @SuppressWarnings("unchecked")
-    IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDocOld
+    IPopulation<IGeneObj> pop = (IPopulation<IGeneObj>) CartAGenDoc
         .getInstance()
         .getCurrentDataset()
         .getCartagenPop(
-            CartAGenDocOld.getInstance().getCurrentDataset()
+            CartAGenDoc.getInstance().getCurrentDataset()
                 .getPopNameFromClass(classObj), ft);
 
     // then cover clusters
@@ -95,7 +94,7 @@ public class PointsNonConvexHullProcess extends ScaleMasterGeneProcess {
       IDirectPositionList points = new DirectPositionList();
       for (IGeneObj obj : cluster) {
         points.add(obj.getGeom().centroid());
-        obj.eliminateBatch();
+        obj.eliminate();
       }
       if (cluster.size() < 3)
         continue;
@@ -103,15 +102,17 @@ public class PointsNonConvexHullProcess extends ScaleMasterGeneProcess {
       IPolygon geom = (IPolygon) new DelaunayNonConvexHull(points,
           maxEdgeLength).compute();
 
-      for (Method meth : CartagenApplication.getInstance().getCreationFactory()
-          .getClass().getMethods()) {
+      for (Method meth : CartAGenDoc.getInstance().getCurrentDataset()
+          .getCartAGenDB().getGeneObjImpl().getCreationFactory().getClass()
+          .getMethods()) {
         if (classObj.equals(meth.getReturnType())) {
           if (meth.getParameterTypes().length == 1
               & (meth.getParameterTypes()[0].equals(IPolygon.class) || meth
                   .getParameterTypes()[0].equals(IGeometry.class))) {
             try {
-              IGeneObj newObj = (IGeneObj) meth.invoke(CartagenApplication
-                  .getInstance().getCreationFactory(), geom);
+              IGeneObj newObj = (IGeneObj) meth.invoke(CartAGenDoc
+                  .getInstance().getCurrentDataset().getCartAGenDB()
+                  .getGeneObjImpl().getCreationFactory(), geom);
               // add object to its dataset population
               pop.add(newObj);
 
@@ -143,7 +144,7 @@ public class PointsNonConvexHullProcess extends ScaleMasterGeneProcess {
       maxEdgeLength = (Double) getParamValueFromName("max_edge_length");
     String themeName = (String) getParamValueFromName("theme");
     ScaleMasterTheme theme = this.getScaleMaster().getThemeFromName(themeName);
-    CartAGenDB db = CartAGenDocOld.getInstance().getCurrentDataset()
+    CartAGenDB db = CartAGenDoc.getInstance().getCurrentDataset()
         .getCartAGenDB();
     Set<Class<?>> classes = new HashSet<Class<?>>();
     classes.addAll(theme.getRelatedClasses());

@@ -89,4 +89,10 @@ public class VMAPFloodArea extends VMAPFeature implements IWaterArea {
     this.exs = exs;
   }
 
+  @Override
+  public WaterAreaNature getNature() {
+    // unused
+    return null;
+  }
+
 }

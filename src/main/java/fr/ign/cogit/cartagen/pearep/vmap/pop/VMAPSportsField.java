@@ -16,6 +16,7 @@ import fr.ign.cogit.cartagen.core.genericschema.urban.IUrbanBlock;
 import fr.ign.cogit.cartagen.pearep.vmap.PeaRepDbType;
 import fr.ign.cogit.cartagen.pearep.vmap.VMAPFeature;
 import fr.ign.cogit.geoxygene.api.feature.IFeature;
+import fr.ign.cogit.geoxygene.api.spatial.coordgeom.ILineString;
 import fr.ign.cogit.geoxygene.api.spatial.coordgeom.IPolygon;
 import fr.ign.cogit.geoxygene.schemageo.api.bati.Batiment;
 import fr.ign.cogit.geoxygene.schemageo.impl.bati.BatimentImpl;
@@ -26,6 +27,7 @@ public class VMAPSportsField extends VMAPFeature implements ISportsField {
    * Associated Geoxygene schema object
    */
   private Batiment geoxObj;
+  private SportsFieldType type = SportsFieldType.UNKNOWN;
 
   // VMAP attributes
   private String fCode, name, nfi, nfn, voi;
@@ -172,6 +174,21 @@ public class VMAPSportsField extends VMAPFeature implements ISportsField {
 
   public void setZ(int z) {
     this.z = z;
+  }
+
+  @Override
+  public SportsFieldType getType() {
+    return type;
+  }
+
+  @Override
+  public String getTypeSymbol() {
+    return type.name();
+  }
+
+  @Override
+  public ILineString getMedianGeom() {
+    return null;
   }
 
 }

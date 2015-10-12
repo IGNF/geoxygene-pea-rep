@@ -62,7 +62,7 @@ public class DeleteDoublePreProcess extends ScaleMasterPreProcess {
           if (other.equals(obj))
             continue;
           if (other.getGeom().equals(obj.getGeom())) {
-            other.eliminateBatch();
+            other.eliminate();
             pop.remove(other);
             if (net != null)
               net.getSections().remove(other);

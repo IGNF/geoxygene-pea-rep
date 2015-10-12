@@ -22,7 +22,7 @@ import fr.ign.cogit.cartagen.pearep.enrichment.DeleteDoublePreProcess;
 import fr.ign.cogit.cartagen.pearep.enrichment.MakeNetworkPlanar;
 import fr.ign.cogit.cartagen.pearep.mgcp.transport.MGCPRoadLine;
 import fr.ign.cogit.cartagen.software.CartAGenDataSet;
-import fr.ign.cogit.cartagen.software.dataset.CartAGenDocOld;
+import fr.ign.cogit.cartagen.software.dataset.CartAGenDoc;
 import fr.ign.cogit.cartagen.spatialanalysis.network.NetworkEnrichment;
 import fr.ign.cogit.cartagen.spatialanalysis.network.Stroke;
 import fr.ign.cogit.cartagen.spatialanalysis.network.roads.RoadStrokesNetwork;
@@ -79,7 +79,7 @@ public class StrokeSelectionProcess extends ScaleMasterGeneProcess {
         .getInstance();
     processDblRoad.setProcessedClasses(classes);
     try {
-      processDblRoad.execute(CartAGenDocOld.getInstance().getCurrentDataset()
+      processDblRoad.execute(CartAGenDoc.getInstance().getCurrentDataset()
           .getCartAGenDB());
     } catch (Exception e) {
       e.printStackTrace();
@@ -91,26 +91,28 @@ public class StrokeSelectionProcess extends ScaleMasterGeneProcess {
     MakeNetworkPlanar process = MakeNetworkPlanar.getInstance();
     process.setProcessedClasses(classes);
     try {
-      process.execute(CartAGenDocOld.getInstance().getCurrentDataset()
+      process.execute(CartAGenDoc.getInstance().getCurrentDataset()
           .getCartAGenDB());
     } catch (Exception e) {
       e.printStackTrace();
     }
-    NetworkEnrichment.enrichNetwork(CartAGenDocOld.getInstance()
-        .getCurrentDataset(), CartAGenDocOld.getInstance().getCurrentDataset()
-        .getRoadNetwork(), deleted);
+    NetworkEnrichment.enrichNetwork(CartAGenDoc.getInstance()
+        .getCurrentDataset(), CartAGenDoc.getInstance().getCurrentDataset()
+        .getRoadNetwork(), deleted, CartAGenDoc.getInstance()
+        .getCurrentDataset().getCartAGenDB().getGeneObjImpl()
+        .getCreationFactory());
 
     // get the eliminated features to compute strokes on
     HashMap<ArcReseau, IRoadLine> map = new HashMap<ArcReseau, IRoadLine>();
     // first get the road features not yet selected
-    for (IGeneObj obj : CartAGenDocOld.getInstance().getCurrentDataset()
+    for (IGeneObj obj : CartAGenDoc.getInstance().getCurrentDataset()
         .getRoadNetwork().getSections()) {
       if (((INetworkSection) obj).getInitialNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (((INetworkSection) obj).getFinalNode() == null) {
-        obj.eliminateBatch();
+        obj.eliminate();
         continue;
       }
       if (deleted) {
@@ -149,7 +151,7 @@ public class StrokeSelectionProcess extends ScaleMasterGeneProcess {
           for (ArcReseau arc : stroke.getFeatures()) {
             IRoadLine road = map.get(arc);
             if (road != null)
-              road.eliminateBatch();
+              road.eliminate();
           }
         }
       }
